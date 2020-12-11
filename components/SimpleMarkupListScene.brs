@@ -1,24 +1,11 @@
 '********** Copyright 2016 Roku Corp.  All Rights Reserved. **********
 
 function init()
-    m.simpleMarkupList = m.top.findNode("SimpleMarkupList")
-    m.simpleMarkupList.content = getMarkupListData()
     m.simpleMarkupGrid = m.top.findNode("SimpleMarkupGrid")
     m.simpleMarkupGrid.content = getMarkupGridData()
-	m.simpleMarkupList.SetFocus(true)
-	m.simpleMarkupList.ObserveField("itemFocused", "onFocusChanged")
-end function
-
-function getMarkupListData() as object
-    data = CreateObject("roSGNode", "ContentNode")
-
-    for i = 1 to 10
-        dataItem = data.CreateChild("SimpleListItemData")
-        dataItem.posterUrl = "http://devtools.web.roku.com/samples/images/Portrait_2.jpg"
-        dataItem.labelText = "This is list item " + stri(i)
-        dataItem.label2Text = "Subitem " + stri(i)
-    end for
-    return data
+    m.simpleMarkupGrid2 = m.top.findNode("SimpleMarkupGrid2")
+    m.simpleMarkupGrid2.content = getMarkupGridData2()
+    m.simpleMarkupGrid.setFocus(true)
 end function
 
 function getMarkupGridData() as object
@@ -32,21 +19,85 @@ function getMarkupGridData() as object
     return data
 end function
 
-function onFocusChanged() as void
-    print "Focus on item: " + stri(m.simpleMarkupList.itemFocused)
-    print "Focus on item: " + stri(m.simpleMarkupList.itemUnfocused) + " lost"
+function getMarkupGridData2() as object
+    data = CreateObject("roSGNode", "ContentNode")
+
+    for i = 1 to 8
+        dataItem = data.CreateChild("SimpleGridItemData")
+        dataItem.posterUrl = "http://devtools.web.roku.com/samples/images/Portrait_1.jpg"
+        dataItem.labelText = "Grid item" + stri(i)
+    end for
+    return data
 end function
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
-    handled = false
-    if (m.simpleMarkupList.hasFocus() = true) and (key = "right") and (press=true)
-	    m.simpleMarkupGrid.setFocus(true)
-		m.simpleMarkupList.setFocus(false)
-	    handled = true
-	else if (m.simpleMarkupGrid.hasFocus() = true) and (key = "left") and (press=true)
-	    m.simpleMarkupGrid.setFocus(false)
-		m.simpleMarkupList.setFocus(true)
-	    handled = true
-	endif
-    return handled    
+    if NOT press then return false
+
+    if key = "down"
+        if m.simpleMarkupGrid.hasFocus()
+            jumpToNextGrid()
+        end if
+    else if key = "up"
+        if m.simpleMarkupGrid2.hasFocus()
+            jumpToFirstGrid()
+        end if
+    end if
+
+    return false
+end function
+
+function jumpToFirstGrid() as Void
+    ' print " "
+    ' print "   >> jumpToFirstGrid()"
+    previousFocusedIndex = m.simpleMarkupGrid2.itemFocused
+
+    childCount = m.simpleMarkupGrid.content.getChildCount()
+
+    itemsOnLastRow = childCount MOD m.simpleMarkupGrid.numColumns
+
+    firstGridNumRows = (childCount -1) \ m.simpleMarkupGrid.numColumns
+
+    ' print "previousFocusedIndex", previousFocusedIndex
+    ' print "childCount", childCount
+    ' print "itemsOnLastRow", itemsOnLastRow
+    ' print "firstGridNumRows", firstGridNumRows
+
+    if itemsOnLastRow = 0 ' it means it's a full row, not empty
+        ' print "  itemsOnLastRow = 0"
+        indexToFocus = firstGridNumRows * m.simpleMarkupGrid.numColumns + previousFocusedIndex
+    else
+        ' print "  itemsOnLastRow <> 0"
+        if itemsOnLastRow >= previousFocusedIndex + 1
+            indexToFocus = firstGridNumRows * m.simpleMarkupGrid.numColumns + previousFocusedIndex
+        else
+            indexToFocus = firstGridNumRows * m.simpleMarkupGrid.numColumns + itemsOnLastRow - 1
+        end if
+    end if
+    ' print "indexToFocus", indexToFocus
+
+    m.simpleMarkupGrid.jumpToItem = indexToFocus
+    m.simpleMarkupGrid.setFocus(true)
+end function
+
+function jumpToNextGrid() as Void
+    ' print " "
+    ' print "   >> jumpToNextGrid()"
+
+    nextGridChildCount = m.simpleMarkupGrid2.content.getChildCount()
+
+    previousLastRowFocusedIndex = m.simpleMarkupGrid.itemFocused MOD m.simpleMarkupGrid.numColumns
+
+    ' print "nextGridChildCount", nextGridChildCount
+    ' print "numColumns", m.simpleMarkupGrid2.numColumns
+    ' print "previousLastRowFocusedIndex", previousLastRowFocusedIndex
+
+    if nextGridChildCount > m.simpleMarkupGrid2.numColumns OR nextGridChildCount > previousLastRowFocusedIndex
+        indexToFocus = previousLastRowFocusedIndex
+    else
+        indexToFocus = nextGridChildCount - 1
+    end if
+    ' print "indexToFocus", indexToFocus
+
+    m.simpleMarkupGrid2.jumpToItem = indexToFocus
+    m.simpleMarkupGrid2.setFocus(true)
 end function

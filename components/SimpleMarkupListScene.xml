@@ -4,28 +4,39 @@
 
 <component name="SimpleMarkupListScene" extends="Scene" >
 
-<script type="text/brightscript" uri="pkg:/components/SimpleMarkupListScene.brs" />
+    <script type="text/brightscript" uri="pkg:/components/SimpleMarkupListScene.brs" />
 
-<children>
-<MarkupList
-    id="SimpleMarkupList"
-    itemComponentName="SimpleListItem"
-    itemSize="[350, 40]"
-    itemSpacing="[0, 20]"
-    translation="[100,100]"
-/>
-
-<MarkupGrid
-    id="SimpleMarkupGrid"
-	itemComponentName="SimpleGridItem"
-	itemSize="[200,200]"
-        itemSpacing="[20, 20]"
-	rowHeights="[200, 200]"
-	columnWidths="[200,200,200]"
-	numColumns="3"
-	numRows="2"
-	translation="[600, 100]"
-/>
-</children>
+    <children>
+        <LayoutGroup layoutDirection="vert">
+            <LayoutGroup layoutDirection="vert">
+                <Label text="1st Section Title" />
+                <MarkupGrid
+                    id="SimpleMarkupGrid"
+                    itemComponentName="SimpleGridItem"
+                    itemSize="[200,200]"
+                    itemSpacing="[20, 20]"
+                    rowHeights="[200, 200]"
+                    columnWidths="[200,200,200,200]"
+                    numColumns="4"
+                    numRows="2"
+                    vertFocusAnimationStyle="floatingFocus"
+                    translation="[600, 100]" />
+            </LayoutGroup>
+            <LayoutGroup layoutDirection="vert">
+                <Label text="2nd Section Title" />
+                <MarkupGrid
+                    id="SimpleMarkupGrid2"
+                    itemComponentName="SimpleGridItem"
+                    itemSize="[200,200]"
+                    itemSpacing="[20, 20]"
+                    rowHeights="[200, 200]"
+                    columnWidths="[200,200,200,200]"
+                    numColumns="4"
+                    numRows="2"
+                    vertFocusAnimationStyle="fixedFocus"
+                    translation="[600, 100]" />
+            </LayoutGroup>
+        </LayoutGroup>
+    </children>
 
 </component>
