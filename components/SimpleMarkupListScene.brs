@@ -35,7 +35,12 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
 
     if key = "down"
         if m.simpleMarkupGrid.hasFocus()
-            jumpToNextGrid()
+            if gridHasLastRowFocused(m.simpleMarkupGrid)
+                jumpToNextGrid()
+            else
+                ' jump to next row of same grid
+                jumpToLastGridItem(m.simpleMarkupGrid)
+            end if
         end if
     else if key = "up"
         if m.simpleMarkupGrid2.hasFocus()
@@ -44,6 +49,31 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     end if
 
     return false
+end function
+
+function gridHasLastRowFocused(grid as Object) as Boolean
+    print " "
+    print "   >> gridHasLastRowFocused()"
+    ' previousFocusedIndex = grid.itemFocused
+
+    childCount = grid.content.getChildCount()
+
+    ' all rows are fully populated
+    ' itemsInLastRow = childCount MOD grid.numColumns
+
+    ' itemsInPreviousRows = childCount - itemsInLastRow
+
+    ' print "previousFocusedIndex", previousFocusedIndex
+    ' print "childCount", childCount
+    ' print "itemsInLastRow", itemsInLastRow
+    ' print "itemsInPreviousRows", itemsInPreviousRows
+    ' print "result", previousFocusedIndex >= itemsInPreviousRows
+
+    return grid.itemFocused >= childCount - (childCount MOD grid.numColumns)
+end function
+
+function jumpToLastGridItem(grid as Object) as Void
+    grid.jumpToItem = grid.content.getChildCount() - 1
 end function
 
 function jumpToFirstGrid() as Void
